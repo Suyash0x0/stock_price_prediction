@@ -46,7 +46,7 @@ def create_model(input_shape):
     return model
 
 # Main function to download data, prepare it, and train the model
-def train_and_predict(ticker, start_date, end_date, window_size=5):
+def train_and_predict(ticker, start_date, end_date, window_size=5, target_profit_percentage=0.05):
     data = yf.download(ticker, start=start_date, end=end_date)
     print("Retrieved data:\n", data)
 
@@ -68,8 +68,15 @@ def train_and_predict(ticker, start_date, end_date, window_size=5):
 
     predicted_price = model.predict(X_test)
     predicted_price = scaler.inverse_transform(predicted_price)  # Inverse transform to get actual price
-    
-    print(f"Predicted price for {ticker} on the next day: ${predicted_price[0][0]:.2f}")
+
+    # Entry point is the predicted price for the next day
+    entry_price = predicted_price[0][0]
+    # Exit point based on the target profit percentage
+    exit_price = entry_price * (1 + target_profit_percentage)
+
+    print(f"Predicted price for {ticker} on the next day: ${entry_price:.2f}")
+    print(f"Suggested entry point: ${entry_price:.2f}")
+    print(f"Suggested exit point for {target_profit_percentage * 100:.0f}% profit: ${exit_price:.2f}")
 
 if __name__ == "__main__":
     # User inputs for the stock prediction
@@ -77,5 +84,8 @@ if __name__ == "__main__":
     start_date = input("Enter the start date for historical data (YYYY-MM-DD): ")
     end_date = input("Enter the end date for historical data (YYYY-MM-DD): ")
     
+    # Optional: User can specify target profit percentage
+    target_profit_percentage = float(input("Enter the target profit percentage (e.g., 0.05 for 5%): "))
+    
     # Train the model and predict
-    train_and_predict(ticker, start_date, end_date)
+    train_and_predict(ticker, start_date, end_date, target_profit_percentage=target_profit_percentage)
