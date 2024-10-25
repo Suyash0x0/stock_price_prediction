@@ -48,20 +48,28 @@ def create_model(input_shape):
 # Main function to download data, prepare it, and train the model
 def train_and_predict(ticker, start_date, end_date, window_size=5):
     data = yf.download(ticker, start=start_date, end=end_date)
-    print("Retrieved data:\n", data)  # Print the data
+    print("Retrieved data:\n", data)
 
-    # Check if data is empty
     if data.empty:
         print("No data found for the specified date range.")
         return
 
     X_train, y_train, scaler = prepare_data(data, window_size)
 
-    # Create and train the model
     model = create_model((X_train.shape[1], 1))
     model.fit(X_train, y_train, epochs=50, batch_size=32)
 
     print("Model training completed.")
+
+    # Make predictions for the next day
+    last_data = data[['Close']].values[-window_size:]  # Get the last 'window_size' data points
+    last_data_scaled = scaler.transform(last_data)
+    X_test = np.reshape(last_data_scaled, (1, last_data_scaled.shape[0], 1))
+
+    predicted_price = model.predict(X_test)
+    predicted_price = scaler.inverse_transform(predicted_price)  # Inverse transform to get actual price
+    
+    print(f"Predicted price for {ticker} on the next day: ${predicted_price[0][0]:.2f}")
 
 if __name__ == "__main__":
     # User inputs for the stock prediction
