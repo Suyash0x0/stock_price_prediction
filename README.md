@@ -12,8 +12,8 @@ This project predicts stock prices using a Long Short-Term Memory (LSTM) model, 
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/Stock_Prediction_ML_Project.git
-    cd Stock_Prediction_ML_Project
+    git clone https://github.com/Suyash0x0/stock_price_prediction.git
+    cd stock_price_prediction
     ```
 
 2. Install the dependencies:
